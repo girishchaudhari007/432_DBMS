@@ -1,0 +1,46 @@
+
+--a)-----------------------------> 
+select D.* 
+from doctor D  
+join patientMaster P on D.Did =P.Did 
+join admittedPatient A on P.Pcode = A.P_code 
+where A.wardNo =3; 
+
+--b)-----------------------------> 
+SELECT TOP 1 disease, COUNT(*) AS patient_count 
+FROM ADMITTEDPATIENT 
+GROUP BY disease 
+ORDER BY patient_count DESC;
+
+--c)-----------------------------> 
+CREATE TRIGGER trg_ValidateWardNoRange_InsteadOf  
+ON ADMITTEDPATIENT 
+INSTEAD OF INSERT, UPDATE 
+AS 
+BEGIN 
+IF EXISTS (SELECT 1 FROM inserted WHERE wardno < 1 OR wardno > 5) 
+BEGIN 
+PRINT ('Error: Ward number must be between 1 and 5.'); 
+ROLLBACK; 
+END 
+ELSE 
+print('Record Inserted / updated Succesfully...'); 
+END; 
+
+
+INSERT INTO ADMITTEDPATIENT VALUES (200, '2025-01-01', '2025-01-05', 0, 'Test Trigger Disease'); 
+INSERT INTO ADMITTEDPATIENT VALUES (200, '2025-01-01', '2025-01-05', 4, 'Test Trigger Disease'); 
+
+--d)-----------------------------> 
+drop PROCEDURE Get_Long_Stay_Patients 
+CREATE PROCEDURE Get_Long_Stay_Patients 
+AS 
+BEGIN 
+    SELECT P.Pcode, P.Pname, DATEDIFF(DAY, A.entryDate, A.dischargeDate) AS Days_Admitted 
+    FROM PATIENTMASTER P 
+    JOIN ADMITTEDPATIENT A ON P.Pcode = A.P_code 
+    WHERE DATEDIFF(DAY, A.entryDate, A.dischargeDate) > 5; 
+END; 
+
+ -- Call the procedure: 
+EXEC Get_Long_Stay_Patients;
