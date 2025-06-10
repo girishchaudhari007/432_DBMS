@@ -1,3 +1,72 @@
+create table doctor( 
+Did int primary key, 
+Dname varchar(20), 
+Daddress varchar(50), 
+qualification varchar(20) 
+); 
+
+create table patientMaster( 
+Pcode int primary key, 
+Pname varchar(20), 
+Padd varchar(30), 
+age int, 
+gender char(1) check (gender in ('M', 'F')), 
+bloodgroup varchar(5), 
+Did int foreign key (Did) references doctor(Did) 
+); 
+
+create table admittedPatient( 
+p_code int foreign key (p_code) references patientMaster(Pcode), 
+entryDate date, 
+dischargeDate date, 
+wardNo int check (wardNo < 6), 
+disease varchar(20) 
+); 
+
+CREATE TABLE ADMITTEDPATIENT ( 
+P_code INT, 
+Entry_date DATE NOT NULL, 
+Discharge_date DATE NOT NULL, 
+wardno INT CHECK (wardno < 6) NOT NULL, 
+disease VARCHAR(100) NOT NULL,
+FOREIGN KEY (P_code) REFERENCES PATIENTMASTER(Pcode) 
+); 
+
+INSERT INTO DOCTOR VALUES 
+(1, 'Dr. Shah', 'Mumbai', 'MBBS'), 
+(2, 'Dr. Mehta', 'Pune', 'MD'), 
+(3, 'Dr. Khan', 'Delhi', 'MBBS'), 
+(4, 'Dr. Iyer', 'Chennai', 'MS'), 
+(5, 'Dr. Roy', 'Kolkata', 'MD'), 
+(6, 'Dr. Singh', 'Bhopal', 'MBBS'), 
+(7, 'Dr. Das', 'Patna', 'MS'), 
+(8, 'Dr. Rao', 'Hyderabad', 'MD'), 
+(9, 'Dr. Verma', 'Nagpur', 'MBBS'), 
+(10, 'Dr. Joshi', 'Surat', 'MD'); 
+ 
+INSERT INTO PATIENTMASTER VALUES 
+(101, 'Amit', 'Mumbai', 25, 'M', 'A', 1), 
+(102, 'Neha', 'Delhi', 30, 'F', 'B', 2), 
+(103, 'Rahul', 'Pune', 40, 'M', 'O', 3), 
+(104, 'Sneha', 'Chennai', 22, 'F', 'AB', 4), 
+(105, 'Ajay', 'Kolkata', 33, 'M', 'A', 5), 
+(106, 'Pooja', 'Bhopal', 28, 'F', 'O', 6), 
+(107, 'Ravi', 'Patna', 45, 'M', 'B', 7), 
+(108, 'Kiran', 'Hyderabad', 29, 'F', 'A', 8), 
+(109, 'Meena', 'Nagpur', 32, 'F', 'AB', 9), 
+(110, 'Kunal', 'Surat', 26, 'M', 'O', 10); 
+ 
+INSERT INTO ADMITTEDPATIENT VALUES 
+(101, '2012-03-01', '2012-03-10', 3, 'Malaria'), 
+(102, '2012-03-05', '2012-03-07', 2, 'Dengue'), 
+(103, '2012-03-03', '2012-03-15', 1, 'Typhoid'), 
+(104, '2012-02-25', '2012-03-10', 3, 'Pneumonia'), 
+(105, '2012-03-20', '2012-03-22', 4, 'COVID'), 
+(106, '2012-03-10', '2012-03-25', 3, 'Injury'), 
+(107, '2012-03-12', '2012-03-18', 2, 'Fever'), 
+(108, '2012-03-15', '2012-03-23', 1, 'Cancer'), 
+(109, '2012-03-17', '2012-03-20', 5, 'Tumor'), 
+(110, '2012-03-21', '2012-03-29', 3, 'Allergy');
 
 --a)-----------------------------> 
 select D.* 
