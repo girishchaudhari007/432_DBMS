@@ -1,3 +1,9 @@
+• Find the different types of printers produced by Epson. 
+• Find those hard disk sizes which occur in two or more PCs. 
+• Write a trigger on LAPTOP table such that the minimum speed should be 120 MHz 
+• Demonstrate the use of cursor using PRODUCT table. 
+
+
 CREATE TABLE PRODUCT ( 
 Maker VARCHAR(20) NOT NULL, 
 Modelno VARCHAR(10) PRIMARY KEY, 
