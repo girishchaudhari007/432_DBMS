@@ -1,0 +1,201 @@
+•Find the name of books which is issued maximum times. 
+•Find the detail information of books that are issued by computer department students. 
+•Write a procedure to calculate the fines for the books which are not return on or before due date. no. of days = (return_date - due_date) fine = no. of days (return_date - due_date) * 10 
+• Write a trigger on insert of ISSUETABLE such that due_date = issue_date + 7 
+•Create a data report that display the information of all books available in the library.
+
+CREATE TABLE BOOKMASTER (
+bid INT PRIMARY KEY,
+title VARCHAR(100) NOT NULL,
+author VARCHAR(100) NOT NULL,
+price DECIMAL(10, 2) NOT NULL
+);
+
+-- Create Studentmaster table
+CREATE TABLE STUDENTMASTER (
+enrollno INT PRIMARY KEY,
+sname VARCHAR(100) NOT NULL,
+class VARCHAR(50) NOT NULL,
+dept VARCHAR(50) NOT NULL
+);
+
+-- Create Accessiontable table
+CREATE TABLE ACCESSIONTABLE (
+bid INT,accession_no INT PRIMARY KEY,
+avail CHAR(1) CHECK (avail IN ('T', 'F')) NOT NULL,
+FOREIGN KEY (bid) REFERENCES BOOKMASTER(bid)
+);
+
+-- Create Issuetable table
+CREATE TABLE ISSUETABLE (
+issueid INT PRIMARY KEY,
+accession_no INT,
+enrollno INT,
+issuedate DATE NOT NULL,
+cluedate DATE NOT NULL,
+ret_date DATE,
+bid INT,
+FOREIGN KEY (accession_no) REFERENCES
+ACCESSIONTABLE(accession_no),
+FOREIGN KEY (enrollno) REFERENCES
+STUDENTMASTER(enrollno),
+FOREIGN KEY (bid) REFERENCES BOOKMASTER(bid)
+);
+
+2. Inserting Data into the Tables
+-- Inserting into BOOKMASTER
+INSERT INTO BOOKMASTER (bid, title, author, price) VALUES
+
+(1, 'Book A', 'Author A', 200.00),
+(2, 'Book B', 'Author B', 300.00),
+(3, 'Book C', 'Author C', 150.00),
+(4, 'Book D', 'Author D', 250.00),
+(5, 'Book E', 'Author E', 180.00),
+(6, 'Book F', 'Author F', 220.00),
+(7, 'Book G', 'Author G', 210.00),
+(8, 'Book H', 'Author H', 190.00),
+(9, 'Book I', 'Author I', 230.00),
+(10, 'Book J', 'Author J', 270.00);
+
+-- Inserting into STUDENTMASTER
+INSERT INTO STUDENTMASTER (enrollno, sname, class, dept)
+VALUES
+(1, 'Alice', '1st Year', 'Computer'),
+(2, 'Bob', '2nd Year', 'Electronics'),
+(3, 'Charlie', '3rd Year', 'Computer'),
+(4, 'David', '4th Year', 'Mechanical'),
+(5, 'Eva', '1st Year', 'Electrical'),
+(6, 'Frank', '2nd Year', 'Civil'),
+(7, 'Grace', '3rd Year', 'Computer'),
+(8, 'Hannah', '4th Year', 'Biotech'),
+
+(9, 'Ivy', '1st Year', 'Computer'),
+(10, 'Jack', '2nd Year', 'Electrical');
+
+-- Inserting into ACCESSIONTABLE
+INSERT INTO ACCESSIONTABLE (bid, accession_no, avail)
+VALUES
+(1, 101, 'T'),
+(2, 102, 'T'),
+(3, 103, 'T'),
+(4, 104, 'T'),
+(5, 105, 'T'),
+(6, 106, 'F'),
+(7, 107, 'T'),
+(8, 108, 'F'),
+(9, 109, 'T'),
+(10, 110, 'T');
+
+2. Inserting Data into the Tables
+-- Inserting into BOOKMASTER
+INSERT INTO BOOKMASTER (bid, title, author, price) VALUES
+(1, 'Book A', 'Author A', 200.00),
+(2, 'Book B', 'Author B', 300.00),
+(3, 'Book C', 'Author C', 150.00),
+(4, 'Book D', 'Author D', 250.00),
+(5, 'Book E', 'Author E', 180.00),
+(6, 'Book F', 'Author F', 220.00),
+(7, 'Book G', 'Author G', 210.00),
+(8, 'Book H', 'Author H', 190.00),
+(9, 'Book I', 'Author I', 230.00),
+(10, 'Book J', 'Author J', 270.00);
+
+-- Inserting into STUDENTMASTER
+INSERT INTO STUDENTMASTER (enrollno, sname, class, dept)VALUES
+(1, 'Alice', '1st Year', 'Computer'),
+(2, 'Bob', '2nd Year', 'Electronics'),
+(3, 'Charlie', '3rd Year', 'Computer'),
+(4, 'David', '4th Year', 'Mechanical'),
+(5, 'Eva', '1st Year', 'Electrical'),
+(6, 'Frank', '2nd Year', 'Civil'),
+(7, 'Grace', '3rd Year', 'Computer'),
+(8, 'Hannah', '4th Year', 'Biotech'),
+(9, 'Ivy', '1st Year', 'Computer'),
+(10, 'Jack', '2nd Year', 'Electrical');
+
+-- Inserting into ACCESSIONTABLE
+INSERT INTO ACCESSIONTABLE (bid, accession_no, avail)
+VALUES
+(1, 101, 'T'),
+(2, 102, 'T'),
+(3, 103, 'T'),
+(4, 104, 'T'),
+(5, 105, 'T'),
+(6, 106, 'F'),
+(7, 107, 'T'),
+(8, 108, 'F'),
+(9, 109, 'T'),
+(10, 110, 'T');
+
+-- Inserting into ISSUETABLE
+INSERT INTO ISSUETABLE (issueid, accession_no, enrollno,
+issuedate, cluedate, ret_date, bid) VALUES
+(1, 101, 1, '2025-04-01', '2025-04-08', '2025-04-10', 1),
+(2, 102, 3, '2025-04-02', '2025-04-09', '2025-04-12', 2),
+(3, 103, 5, '2025-04-03', '2025-04-10', '2025-04-13', 3),
+(4, 104, 2, '2025-04-04', '2025-04-11', '2025-04-14', 4),
+(5, 105, 7, '2025-04-05', '2025-04-12', '2025-04-15', 5),
+(6, 106, 9, '2025-04-06', '2025-04-13', '2025-04-16', 6),
+(7, 107, 8, '2025-04-07', '2025-04-14', '2025-04-17', 7),
+(8, 108, 4, '2025-04-08', '2025-04-15', '2025-04-18', 8),
+(9, 109, 6, '2025-04-09', '2025-04-16', '2025-04-19', 9),
+(10, 110, 10, '2025-04-10', '2025-04-17', '2025-04-20', 10);
+
+--a) Find the name of books which are issued the maximum times.----
+SELECT b.title, COUNT(i.issueid) AS issue_count
+FROM BOOKMASTER b
+JOIN ISSUETABLE i ON b.bid = i.bid
+GROUP BY b.title
+ORDER BY issue_count DESC
+LIMIT 1;
+
+---b) Find the detailed information of books that are issued by
+computer department students.
+SELECT b.*, s.sname, s.class, s.dept, i.issuedate, i.cluedate,i.ret_date
+FROM BOOKMASTER b
+JOIN ISSUETABLE i ON b.bid = i.bid
+JOIN STUDENTMASTER s ON i.enrollno = s.enrollno
+WHERE s.dept = 'Computer';
+
+------------c) Write a procedure to calculate the fines for the books
+which are not returned on or before the due date
+CREATE PROCEDURE CalculateFines()
+AS
+BEGIN
+DECLARE @fine INT, @no_of_days INT;
+
+-- Declare a cursor to fetch records
+DECLARE book_cursor CURSOR FOR
+SELECT issueid, ret_date, cluedate
+FROM ISSUETABLE
+WHERE ret_date > cluedate;
+
+OPEN book_cursor;
+
+FETCH NEXT FROM book_cursor INTO @issueid,
+@ret_date, @cluedate;
+
+-- Loop through each record and calculate fine
+WHILE @@FETCH_STATUS = 0
+
+BEGIN
+SET @no_of_days = DATEDIFF(DAY, @cluedate,
+@ret_date);
+SET @fine = @no_of_days * 10;
+
+PRINT 'Issue ID: ' + CAST(@issueid AS VARCHAR) + ' -
+Fine: ' + CAST(@fine AS VARCHAR);
+
+FETCH NEXT FROM book_cursor INTO @issueid,
+@ret_date, @cluedate;
+END;
+
+CLOSE book_cursor;
+DEALLOCATE book_cursor;
+END;
+
+---4. Data Report: Display all books available in the library.
+SELECT b.title, b.author, a.avail
+FROM BOOKMASTER b
+JOIN ACCESSIONTABLE a ON b.bid = a.bid
+WHERE a.avail = 'T';
