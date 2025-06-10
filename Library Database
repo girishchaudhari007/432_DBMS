@@ -1,0 +1,109 @@
+Queries:  
+• Find the detail information of the students who have issued books Between two given dates. 
+• Create a view that display all the accession information for a book having bid = 100 
+• Write a cursor to fetch last record from view in (b). 
+• Find the information of books issued by MCA students. 
+
+
+CREATE TABLE BOOKMASTER (
+bid INT PRIMARY KEY,
+title VARCHAR(100) NOT NULL,
+author VARCHAR(100) NOT NULL,
+price DECIMAL(10,2) NOT NULL
+);
+
+
+CREATE TABLE STUDENTMASTER (
+stud_enrollno VARCHAR(20) PRIMARY KEY,
+sname VARCHAR(100) NOT NULL,
+class VARCHAR(10) NOT NULL,
+dept VARCHAR(50) NOT NULL
+);
+
+
+CREATE TABLE ACCESSIONTABLE (
+accession_no INT PRIMARY KEY,
+avail CHAR(1) CHECK (avail IN ('T', 'F')) NOT NULL
+
+);
+
+
+CREATE TABLE ISSUETABLE (
+issueid INT PRIMARY KEY,
+accession_no INT NOT NULL,
+stud_enrollno VARCHAR(20) NOT NULL,
+issuedate DATE NOT NULL,
+duedate DATE NOT NULL,
+ret_date DATE NOT NULL,
+bid INT NOT NULL,
+FOREIGN KEY (accession_no) REFERENCES ACCESSIONTABLE(accession_no),
+FOREIGN KEY (stud_enrollno) REFERENCES STUDENTMASTER(stud_enrollno),
+FOREIGN KEY (bid) REFERENCES BOOKMASTER(bid)
+);
+
+-- BOOKMASTER
+INSERT INTO BOOKMASTER VALUES
+(100, 'Data Structures', 'Mark Weiss', 450.50),
+(101, 'DBMS Concepts', 'Silberschatz', 499.00),
+(102, 'Operating Systems', 'Galvin', 599.00),
+(103, 'Computer Networks', 'Tanenbaum', 550.00),
+(104, 'AI Basics', 'Stuart Russell', 670.00),
+(105, 'Machine Learning', 'Tom Mitchell', 720.00),
+(106, 'Python Programming', 'Zed Shaw', 300.00),
+(107, 'Java Complete Ref', 'Herbert Schildt', 650.00),
+(108, 'Web Dev', 'Jon Duckett', 400.00),
+(109, 'Cyber Security', 'William Stallings', 800.00);
+
+-- STUDENTMASTER
+INSERT INTO STUDENTMASTER VALUES
+('S001', 'Alice Smith', 'FY', 'MCA'),
+('S002', 'Bob Brown', 'SY', 'MCA'),
+('S003', 'Charlie Day', 'TY', 'MBA'),
+('S004', 'David Johnson', 'FY', 'MCA'),
+('S005', 'Eva Green', 'TY', 'MSc'),
+('S006', 'Frank Wright', 'SY', 'MBA'),
+('S007', 'Grace Hopper', 'TY', 'MCA'),
+('S008', 'Henry Ford', 'FY', 'MSc'),
+('S009', 'Irene Adler', 'SY', 'MCA'),
+('S010', 'Jack Ryan', 'TY', 'MBA');
+
+-- ACCESSIONTABLE
+INSERT INTO ACCESSIONTABLE VALUES
+(1, 'T'), (2, 'F'), (3, 'T'), (4, 'F'), (5, 'T'),
+(6, 'T'), (7, 'F'), (8, 'T'), (9, 'T'), (10, 'F');
+
+-- ISSUETABLE
+INSERT INTO ISSUETABLE VALUES
+(201, 2, 'S001', '2024-04-01', '2024-04-15', '2024-04-10', 100),
+(202, 4, 'S002', '2024-03-01', '2024-03-15', '2024-03-14', 101),
+(203, 7, 'S004', '2024-04-02', '2024-04-12', '2024-04-11', 100),
+(204, 10, 'S007', '2024-04-03', '2024-04-17', '2024-04-16',104),
+(205, 1, 'S003', '2024-04-04', '2024-04-18', '2024-04-15', 102),
+(206, 3, 'S006', '2024-04-05', '2024-04-20', '2024-04-18', 103),
+(207, 5, 'S009', '2024-04-06', '2024-04-21', '2024-04-20', 100),
+(208, 6, 'S010', '2024-04-07', '2024-04-22', '2024-04-21', 101),
+(209, 8, 'S008', '2024-04-08', '2024-04-23', '2024-04-22', 109),
+(210, 9, 'S005', '2024-04-09', '2024-04-24', '2024-04-23', 108);
+
+--a--------------------------
+DECLARE @startDate DATE = '2024-04-01';
+DECLARE @endDate DATE = '2024-04-10';
+SELECT s.*
+FROM STUDENTMASTER s
+JOIN ISSUETABLE i ON s.stud_enrollno = i.stud_enrollno
+WHERE i.issuedate BETWEEN @startDate AND @endDate;
+
+--b------------------------------
+CREATE VIEW Book100Accessions AS
+SELECT a.accession_no, a.avail, i.bid
+FROM ACCESSIONTABLE a
+JOIN ISSUETABLE i ON a.accession_no = i.accession_no
+WHERE i.bid = 100;
+
+--d-------------------------Information of books issued by MCA students------------
+SELECT b.*
+FROM BOOKMASTER b
+JOIN ISSUETABLE i ON b.bid = i.bid
+JOIN STUDENTMASTER s ON s.stud_enrollno =
+i.stud_enrollno
+WHERE s.dept = 'MCA';
