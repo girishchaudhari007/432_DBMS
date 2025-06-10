@@ -1,3 +1,8 @@
+• Find PC models having a speed of at least 150 MHz 
+• Find those manufacturers that sell Laptops, but not PC's. 
+• Write a trigger on LAPTOP table such that the price should not less than 30000 
+• Write a procedure to find the manufacturer who has produced the most expensive laptop. 
+
 CREATE DATABASE Product_Catalog_DB; 
 USE Product_Catalog_DB; 
 
