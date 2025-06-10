@@ -1,0 +1,120 @@
+• Find the ssn of all employees who work on pno 101, 102 or 103. 
+• Make a list of all pno for project that involve an employee whose last name is 'sonar' either as a worker or as a manager of the dept that control the project. 
+• Write a trigger on insert on WORK_ON table such that if total work hours of employee in company is less than 20 hours then his salary is deducted. 
+• Write a cursor on PROJECT table to fetch the first row from the table & display the total number of rows present in the table.
+
+-- Step 1: Create DEPT table first, without the foreign key to EMPLOYEE
+CREATE TABLE DEPT (
+    dname VARCHAR(50) NOT NULL,
+    dnum INT PRIMARY KEY CHECK (dnum < 1000),
+    mgrssn CHAR(9), -- Foreign key will be added later
+    dlocation VARCHAR(100) NOT NULL
+);
+
+-- Step 2: Create EMPLOYEE table
+CREATE TABLE EMPLOYEE (
+    fname VARCHAR(50) NOT NULL,
+    lname VARCHAR(50) NOT NULL,
+    ssn CHAR(9) PRIMARY KEY, -- Assuming SSN is a unique 9-digit number
+    sex CHAR(1) CHECK (sex IN ('M', 'F')) NOT NULL,
+    salary DECIMAL(10, 2) NOT NULL,
+    joindate DATE NOT NULL,
+    superssn CHAR(9), -- This will be the SSN of the supervisor
+    dno INT NOT NULL, -- Department number (FK reference)
+    FOREIGN KEY (superssn) REFERENCES EMPLOYEE(ssn), -- Self-referencing
+    FOREIGN KEY (dno) REFERENCES DEPT(dnum) -- Reference to Department
+);
+
+-- Step 3: Now add foreign key in DEPT to reference EMPLOYEE
+ALTER TABLE DEPT
+ADD CONSTRAINT FK_mgrssn FOREIGN KEY (mgrssn) REFERENCES EMPLOYEE(ssn);
+
+-- Step 4: Create PROJECT Table
+CREATE TABLE PROJECT (
+    pname VARCHAR(50) NOT NULL,
+    pno INT PRIMARY KEY, -- Project number
+    plocation VARCHAR(100) NOT NULL,
+    dnumber INT NOT NULL, -- Department number controlling the project
+    FOREIGN KEY (dnumber) REFERENCES DEPT(dnum) -- Reference to Department
+);
+
+-- Step 5: Create WORK_ON Table
+CREATE TABLE WORK_ON (
+    ssn CHAR(9), -- Employee SSN
+    pno INT, -- Project number
+    hours DECIMAL(5, 2) NOT NULL,
+    PRIMARY KEY (ssn, pno), -- Composite primary key (employee, project)
+    FOREIGN KEY (ssn) REFERENCES EMPLOYEE(ssn),
+    FOREIGN KEY (pno) REFERENCES PROJECT(pno)
+);
+
+INSERT INTO DEPT (dname, dnum, mgrssn, dlocation)
+VALUES
+('HR', 1, NULL, 'New York'),
+('IT', 2, NULL, 'San Francisco'),
+('Sales', 3, NULL, 'Chicago'),
+('Finance', 4, NULL, 'Los Angeles');
+
+INSERT INTO EMPLOYEE (fname, lname, ssn, sex, salary, joindate, superssn, dno) VALUES
+('John', 'Doe', '123456789', 'M', 60000, '2020-01-10', NULL, 1),
+('Jane', 'Smith', '987654321', 'F', 65000, '2019-03-15', '123456789', 2),
+('Mary', 'Johnson', '112233445', 'F', 50000, '2021-06-25', '987654321', 3),
+('Mike', 'Brown', '556677889', 'M', 70000, '2018-02-20', NULL, 4),
+('Tom', 'Davis', '223344556', 'M', 75000, '2017-07-10', '556677889', 1),
+('Nancy', 'Wilson', '334455667', 'F', 55000, '2020-08-30', '223344556', 2),
+('Emily', 'Taylor', '445566778', 'F', 72000, '2019-04-15', '334455667', 3),
+('David', 'Anderson', '556677990', 'M', 80000, '2016-11-05', '445566778', 4),
+('Laura', 'Thomas', '667788991', 'F', 54000, '2022-09-18', '556677990', 1),
+('James', 'Jackson', '778899002', 'M', 60000, '2021-02-05', '667788991', 2);
+
+INSERT INTO PROJECT (pname, pno, plocation, dnumber)
+VALUES
+('Project Alpha', 101, 'New York', 1),
+('Project Beta', 102, 'San Francisco', 2),
+('Project Gamma', 103, 'Chicago', 3),
+('Project Delta', 104, 'Los Angeles', 4),
+('Project Epsilon', 105, 'New York', 1),
+('Project Zeta', 106, 'San Francisco', 2),
+('Project Eta', 107, 'Chicago', 3),
+('Project Theta', 108, 'Los Angeles', 4),
+('Project Iota', 109, 'New York', 1),
+('Project Kappa', 110, 'San Francisco', 2);
+
+INSERT INTO WORK_ON (ssn, pno, hours) VALUES
+('123456789', 101, 15.5),
+('987654321', 102, 22.0),
+('112233445', 103, 18.0),
+('556677889', 101, 19.0),
+('223344556', 102, 25.0),
+('334455667', 103, 10.0),
+('445566778', 104, 30.0),
+('556677990', 105, 15.5),
+('667788991', 106, 40.0),
+('778899002', 107, 12.0);
+
+----a) Find the ssn of all employees who work on pno 101,102, or 103.
+SELECT DISTINCT ssn
+FROM WORK_ON
+WHERE pno IN (101, 102, 103);
+
+---------b) Make a list of all pno for projects that involve an employee whose last name is 'sonar' either as a worker or as a manager of the dept that controls the project.
+SELECT DISTINCT pno
+FROM PROJECT
+WHERE dnumber IN (
+SELECT dno
+FROM EMPLOYEE
+WHERE lname = 'sonar'
+UNION
+SELECT p.dnumber
+FROM PROJECT p
+JOIN WORK_ON w ON p.pno = w.pno
+JOIN EMPLOYEE e ON w.ssn = e.ssn
+WHERE e.lname = 'sonar'
+);
+
+4. Data Report Showing Project Information and Employee Names
+SELECT p.pname, e.fname, e.lname
+FROM PROJECT p
+JOIN WORK_ON w ON p.pno = w.pno
+JOIN EMPLOYEE e ON w.ssn = e.ssn
+ORDER BY p.pname, e.lname;
