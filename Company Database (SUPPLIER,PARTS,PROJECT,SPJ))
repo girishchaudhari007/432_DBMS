@@ -1,0 +1,126 @@
+create table suppplier ( 
+Sno varchar(5) primary key check (Sno Like 'S%'), 
+Sname varchar(20) not null, 
+Address varchar(30) not null, 
+City varchar(20) check( City in ('New York', 'London', 'Paris', 'Rome', 'Amsterdam'))   
+); 
+
+create table parts ( 
+Pno varchar(5) primary key, 
+Pname varchar(10) not null, 
+Color varchar(10) not null, 
+weight int not null, 
+price int not null 
+); 
+
+create table project ( 
+Jno varchar(5) primary key, 
+Jname varchar(10) not null, 
+city varchar(20) check (city in ('New York', 'London', 'Paris', 'Rome', 'Amsterdam')) 
+); 
+
+create table SPJ( 
+Sno varchar(5), 
+Pno varchar(5), 
+Jno varchar(5), 
+Qty int, 
+primary key (Sno,Pno,Jno), 
+Foreign key (Sno) references suppplier(Sno), 
+Foreign key (Pno) references parts(Pno), 
+Foreign key (Jno) references project(Jno), 
+); 
+
+INSERT INTO suppplier VALUES  
+('S101', 'A1 Supply','123  St', 'London'), 
+('S102', 'B2 Supply', '123 Main ','Paris'), 
+('S103', 'C3 Supply','123 Main St', 'Rome'), 
+('S104', 'D4 Supply','123 Main St', 'New York'), 
+('S105', 'E5 Supply','123  St', 'Amsterdam'), 
+('S106', 'F6 Supply','123 Main St', 'London'), 
+('S107', 'G7 Supply','123  St', 'Paris'), 
+('S108', 'H8 Supply','123 Main ', 'Rome'), 
+('S109', 'I9 Supply','123 Main St', 'London'), 
+('S110', 'J10 Supply','123 Main ', 'Paris');
+
+INSERT INTO PARTS (Pno, Pname, Color, Weight, price) values 
+('P1', 'Bolt', 'Red', 12,123), 
+('P2', 'Nut', 'Blue', 05,12), 
+('P3', 'Screw', 'Green', 03,12), 
+('P4', 'Washer', 'Yellow', 1,4), 
+('P5', 'Nail', 'Black', 02,54), 
+('P6', 'Pin', 'White', 01,12), 
+('P7', 'Clip', 'Silver', 5,34), 
+('P8', 'Hook', 'Gray', 2,12), 
+('P9', 'Plate', 'Orange',134, 222), 
+('P10', 'Rod', 'Purple', 3,234); 
+ 
+INSERT INTO PROJECT (Jno, Jname, City) VALUES 
+('J1', 'Bridge', 'London'), 
+('J2', 'Building', 'Paris'), 
+('J3', 'Road', 'Rome'), 
+('J4', 'Tunnel', 'Paris'), 
+('J5', 'Airport', 'New York'), 
+('J6', 'Port', 'Amsterdam'), 
+('J7', 'Mall', 'London'), 
+('J8', 'Hospital', 'Paris'), 
+('J9', 'School', 'Rome'), 
+('J10', 'Factory', 'Paris'); 
+ 
+INSERT INTO SPJ (Sno, Pno, Jno, Qty) VALUES 
+('S101','P1','J2',100), 
+('S101','P2','J2',200), 
+('S101','P3','J2',300), 
+('S102','P4','J4',150), 
+('S102','P5','J4',250), 
+('S103','P6','J2',180), 
+('S104','P7','J2',130), 
+('S105','P8','J2',170), 
+('S106','P9','J4',190), 
+('S107','P10','J4',160); 
+
+
+ --a)-----------------------------> 
+SELECT Jno 
+FROM SPJ 
+GROUP BY Jno 
+HAVING COUNT(DISTINCT Pno) >= 3; 
+
+ --b)-----------------------------> 
+CREATE TRIGGER trg_unique_jname 
+ON PROJECT 
+INSTEAD OF INSERT, UPDATE 
+AS 
+BEGIN 
+  IF EXISTS ( 
+    SELECT 1 FROM PROJECT p 
+    JOIN INSERTED i ON p.Jname = i.Jname AND p.Jno != i.Jno 
+  ) 
+  begin 
+ print('Duplicate project name not allowed!'); 
+ ROLLBACK TRANSACTION; 
+  end; 
+  ELSE 
+ print('Record Inserted / updated Succesfully...'); 
+END; 
+ 
+INSERT INTO PROJECT (Jno, Jname, City) 
+VALUES ('J11', 'Metro Rail', 'Rome'); 
+ 
+INSERT INTO PROJECT (Jno, Jname, City) 
+VALUES ('J12', 'Bridge', 'London'); 
+ 
+ --c)-----------------------------> 
+SELECT * FROM PROJECT WHERE City = 'London';
+
+ --d)-----------------------------> 
+CREATE PROCEDURE TotalSalesInParis 
+AS 
+BEGIN 
+    SELECT SUM(P.Price * S.Qty) AS TotalSales -- Changed P.Price to P.Weight 
+    FROM SPJ S 
+    JOIN PROJECT J ON S.Jno = J.Jno 
+    JOIN PARTS P ON S.Pno = P.Pno 
+    WHERE J.City = 'Paris'; 
+END; 
+ 
+EXEC TotalSalesInParis; 
