@@ -1,3 +1,9 @@
+1. Find all the projects which are provided 3 or more parts. 
+2. Write a trigger on PROJECT table for update / insert such that the .jname value Should not be repeated. 
+3. Find full details of all projects in London. 
+4. Write a procedure for calculating the total sales of all the parts which are provided to projects in Paris city.
+
+
 create table suppplier ( 
 Sno varchar(5) primary key check (Sno Like 'S%'), 
 Sname varchar(20) not null, 
