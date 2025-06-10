@@ -1,0 +1,59 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+--a)-----------------------------> 
+select PR.type 
+from product P 
+join printer PR on P.Modelno = PR.Modelno 
+where P.maker = 'epson'; 
+
+--b)-----------------------------> 
+SELECT HD 
+FROM PC 
+GROUP BY HD 
+HAVING COUNT(*) >= 2; 
+
+--c)-----------------------------> 
+CREATE TRIGGER trg_LaptopSpeed 
+ON LAPTOP 
+INSTEAD OF INSERT 
+AS 
+BEGIN 
+    IF EXISTS (SELECT * FROM inserted WHERE Speed < 1201) 
+    BEGIN 
+        print('Laptop speed must be at least 1201 MHz.'); 
+        ROLLBACK; 
+    END 
+    ELSE 
+ print(' Record inserted Succesfully...'); 
+END; 
+ 
+INSERT INTO LAPTOP VALUES('M61', 1205, 5012, 8, 55000); 
+
+ --d)-----------------------------> 
+DECLARE @Model VARCHAR(20), @Maker VARCHAR(30), @Type VARCHAR(10); 
+ 
+DECLARE Product_Cursor CURSOR FOR 
+SELECT Modelno, Maker, Type FROM PRODUCT; 
+ 
+OPEN Product_Cursor; 
+ 
+FETCH NEXT FROM Product_Cursor INTO @Model, @Maker, @Type; 
+ 
+WHILE @@FETCH_STATUS = 0 
+BEGIN 
+PRINT 'Model: ' + @Model + ', Maker: ' + @Maker + ', Type: ' + @Type; 
+FETCH NEXT FROM Product_Cursor INTO @Model, @Maker, @Type; 
+END 
+CLOSE Product_Cursor; 
+DEALLOCATE Product_Cursor;
