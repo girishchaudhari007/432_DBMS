@@ -1,0 +1,22 @@
+• Find the details of all transactions performed on account number 101. Also specify the name/names of cutomers who owns that account. 
+• Find the details of amount credited within the period 15 -3-2012 to 18 -3 -2012. 
+• Write a trigger on insert on ACCOUNT table such that the account which is having balance less than or equal to 500 should not be debited. 
+• Write a procedure on ACCOUNT table to calculate interest on current balance from open_date to today's date. (Take interest rate from user). 
+
+
+
+--a)-----------------------------> 
+INSERT INTO ACCOUNT VALUES (101, '2012-01-01', 'P', 10000); 
+INSERT INTO CUSTOMER VALUES (201, 'Ravi Kumar', 'Nashik', 101); 
+INSERT INTO TRANSACT VALUES  
+(501, '2012-03-15', 101, 'C', 5000), 
+(502, '2012-03-18', 101, 'C', 750); 
+SELECT T.*, C.name 
+FROM TRANSACT T 
+JOIN CUSTOMER C ON T.accno = C.accno 
+WHERE T.accno = 101; 
+
+--b)-----------------------------> 
+SELECT * FROM TRANSACT 
+WHERE trans_type = 'C' 
+AND trans_date BETWEEN '2012-03-15' AND '2012-03-18';
