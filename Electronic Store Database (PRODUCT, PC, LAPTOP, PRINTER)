@@ -1,0 +1,110 @@
+CREATE DATABASE Product_Catalog_DB; 
+USE Product_Catalog_DB; 
+
+CREATE TABLE PRODUCT ( 
+Maker VARCHAR(20) NOT NULL, 
+Modelno VARCHAR(10) PRIMARY KEY, 
+Type VARCHAR(10) NOT NULL CHECK (Type IN ('PC', 'Laptop', 'Printer')) 
+); 
+
+CREATE TABLE PC ( 
+Modelno VARCHAR(10) PRIMARY KEY, 
+Speed INT NOT NULL, 
+RAM INT NOT NULL, 
+HD INT NOT NULL, 
+CD VARCHAR(10) NOT NULL, 
+Price INT NOT NULL 
+); 
+
+CREATE TABLE LAPTOP ( 
+Modelno VARCHAR(10) PRIMARY KEY, 
+Speed INT NOT NULL, 
+RAM INT NOT NULL, 
+HD INT NOT NULL, 
+Price INT NOT NULL 
+); 
+
+CREATE TABLE PRINTER ( 
+Modelno VARCHAR(10) PRIMARY KEY, 
+Color CHAR(1) NOT NULL CHECK (Color IN ('T', 'F')), 
+Type VARCHAR(20) NOT NULL CHECK (Type IN ('laser', 'ink-jet', 'dot-matrix', 'dry')), 
+Price INT NOT NULL 
+); 
+
+INSERT INTO PRODUCT VALUES  
+('HP', 'M1', 'PC'), 
+('Dell', 'M2', 'Laptop'), 
+('Lenovo', 'M3', 'Laptop'), 
+('HP', 'M4', 'Printer'), 
+('Dell', 'M5', 'PC'), 
+('Acer', 'M6', 'Laptop'), 
+('HP', 'M7', 'Laptop'), 
+('Canon', 'M8', 'Printer'), 
+('Asus', 'M9', 'Laptop'), 
+('Epson', 'M10', 'Printer');
+
+INSERT INTO PC VALUES  
+('M1', 200, 8, 500, '52X', 45000), 
+('M5', 180, 16, 1000, '48X', 50000), 
+('M11', 150, 4, 320, '24X', 32000), 
+('M12', 170, 8, 512, '40X', 36000), 
+('M13', 190, 4, 250, '52X', 34000), 
+('M14', 210, 8, 750, '48X', 47000), 
+('M15', 160, 16, 1000, '40X', 52000), 
+('M16', 200, 8, 500, '52X', 40000), 
+('M17', 155, 8, 256, '36X', 35000), 
+('M18', 220, 16, 2000, '56X', 60000);
+
+INSERT INTO LAPTOP VALUES 
+('M2', 250, 8, 512, 55000), 
+('M3', 200, 16, 1000, 60000), 
+('M6', 180, 8, 500, 35000), 
+('M7', 300, 16, 512, 75000), 
+('M9', 220, 8, 256, 30000), 
+('M19', 210, 4, 256, 32000), 
+('M20', 160, 4, 320, 36000), 
+('M21', 280, 16, 512, 65000), 
+('M22', 200, 8, 750, 48000), 
+('M23', 190, 16, 1000, 50000); 
+
+INSERT INTO PRINTER VALUES 
+('M4', 'F', 'ink-jet', 10000), 
+('M8', 'T', 'laser', 15000), 
+('M10', 'F', 'dot-matrix', 7000), 
+('M24', 'T', 'laser', 18000), 
+('M25', 'F', 'ink-jet', 9500), 
+('M26', 'T', 'laser', 17000), 
+('M27', 'F', 'dot-matrix', 7500), 
+('M28', 'F', 'dry', 10500), 
+('M29', 'T', 'laser', 20000), 
+('M30', 'F', 'ink-jet', 11000);
+
+--a)-----------------------------> 
+SELECT * FROM PC WHERE Speed <= 150;
+
+--b)-----------------------------> 
+select maker from product where type = 'laptop' 
+except 
+select maker from product where type = 'pc';
+
+--c)-----------------------------> 
+create trigger chk_laptop_price 
+on laptop 
+after insert, update 
+as 
+begin 
+if exists ( select * from inserted where price < 300000) 
+print('Laptop price not be less, at least 30000'); 
+end; 
+
+insert into laptop values('M243', 250, 8, 512, 5000); 
+
+--d)-----------------------------> 
+create procedure MostExpensiveLaptop 
+as begin 
+select top 1 P.maker 
+from product P 
+join laptop L on P.modelNo = L.modelno  
+order by L.price desc; 
+end; 
+exec MostExpensiveLaptop ; 
