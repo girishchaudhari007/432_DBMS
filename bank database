@@ -1,0 +1,19 @@
+• Find the details of customers who have personal accounts & balance is less than 2 lakhs. 
+• Find the details of customers who have joint accounts. 
+• Write a trigger on ACCOUNT table such that if balance is less than 300 then customer should not withdraw the money. 
+• Write a procedure on ACCOUNT & TRANSACTION table such that as user enters new transaction the balance is, updated in ACCOUNT table.
+
+
+
+
+--a)-----------------------------> 
+SELECT * 
+FROM CUSTOMER C 
+JOIN ACCOUNT A ON C.accno = A.accno 
+WHERE A.acctype = 'P' AND A.balance < 200000; 
+ 
+--b)-----------------------------> 
+SELECT C.*, A.acctype 
+FROM CUSTOMER C 
+JOIN ACCOUNT A ON C.accno = A.accno 
+WHERE A.acctype = 'J'; 
