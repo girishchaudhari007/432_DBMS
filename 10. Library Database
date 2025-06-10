@@ -1,0 +1,114 @@
+a) Write a procedure for giving the detail information of books available in the library. 
+2) Find the number of books issued by each student. 
+c) Write a trigger such that the return date should not exceed today's date. 
+d) Find the number of books available in the library & written by "Henry Korth". 
+
+CREATE TABLE BOOKMASTER (
+bid INT PRIMARY KEY,
+title VARCHAR(100) NOT NULL,
+author VARCHAR(100) NOT NULL,
+price DECIMAL(8, 2) NOT NULL
+);
+
+CREATE TABLE STUDENTMASTER (
+stud_enroll_no INT PRIMARY KEY,
+sname VARCHAR(100) NOT NULL,
+class VARCHAR(50) NOT NULL,
+dept VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE ACCESSIONTABLE (
+bid INT NOT NULL,
+accession_no INT PRIMARY KEY,
+avail CHAR(1) CHECK (avail IN ('T', 'F')) NOT NULL,
+FOREIGN KEY (bid) REFERENCES BOOKMASTER(bid)
+);
+
+CREATE TABLE ISSUETABLE (
+issueid INT PRIMARY KEY,
+accession_no INT NOT NULL,
+stud_enroll_no INT NOT NULL,
+issuedate DATE NOT NULL,
+duedate DATE NOT NULL,
+ret_date DATE NOT NULL,
+FOREIGN KEY (accession_no) REFERENCES
+ACCESSIONTABLE(accession_no),
+FOREIGN KEY (stud_enroll_no) REFERENCES
+STUDENTMASTER(stud_enroll_no)
+);
+
+INSERT INTO BOOKMASTER VALUES
+(1, 'Database Systems', 'Henry Korth', 450.00),
+(2, 'Operating Systems', 'Galvin', 500.00),
+(3, 'Networking Concepts', 'Tanenbaum', 550.00),
+(4, 'DBMS Concepts', 'Navathe', 480.00),
+(5, 'Software Engineering', 'Sommerville', 600.00),
+(6, 'Algorithms', 'Cormen', 700.00),
+(7, 'Computer Architecture', 'Morris Mano', 650.00),
+(8, 'AI Basics', 'Russell', 520.00),
+(9, 'Java Programming', 'Herbert Schildt', 400.00),
+(10, 'Database Design', 'Henry Korth', 470.00);
+
+INSERT INTO STUDENTMASTER VALUES
+(101, 'Alice', 'FY', 'CS'),
+(102, 'Bob', 'FY', 'CS'),
+(103, 'Charlie', 'SY', 'IT'),
+(104, 'David', 'TY', 'IT'),
+(105, 'Eve', 'SY', 'CS'),
+(106, 'Frank', 'TY', 'CS'),
+(107, 'Grace', 'FY', 'IT'),
+(108, 'Hank', 'SY', 'CS'),
+(109, 'Ivy', 'TY', 'CS'),
+(110, 'Jack', 'FY', 'IT');
+
+INSERT INTO ACCESSIONTABLE VALUES
+(1, 1001, 'T'),
+(1, 1002, 'F'),
+(2, 1003, 'T'),
+(3, 1004, 'F'),
+(4, 1005, 'T'),
+(5, 1006, 'T'),
+(6, 1007, 'F'),
+(7, 1008, 'T'),
+(10, 1009, 'F'),
+(10, 1010, 'T');
+
+INSERT INTO ISSUETABLE VALUES
+(1, 1002, 101, '2025-04-01', '2025-04-10', '2025-04-09'),
+(2, 1004, 102, '2025-04-03', '2025-04-12', '2025-04-11'),
+(3, 1007, 103, '2025-04-05', '2025-04-15', '2025-04-14'),
+(4, 1009, 104, '2025-04-06', '2025-04-16', '2025-04-15');
+
+
+--a------------------
+CREATE PROCEDURE GetAvailableBooks
+AS
+BEGIN
+SELECT B.bid, B.title, B.author, B.price, A.accession_no
+FROM BOOKMASTER B
+JOIN ACCESSIONTABLE A ON B.bid = A.bid
+WHERE A.avail = 'T';
+END;
+
+exec GetAvailableBooks;
+
+--b------------------
+SELECT S.sname, S.stud_enroll_no, COUNT(I.issueid) AS
+books_issued
+FROM STUDENTMASTER S
+LEFT JOIN ISSUETABLE I ON S.stud_enroll_no =
+I.stud_enroll_no
+GROUP BY S.sname, S.stud_enroll_no;
+
+--c-----------------------
+SELECT COUNT(*) AS AvailableBooksByHenryKorth
+FROM BOOKMASTER B
+JOIN ACCESSIONTABLE A ON B.bid = A.bid
+WHERE B.author = 'Henry Korth' AND A.avail = 'T';
+
+--d---------------------
+SELECT SM.class, COUNT(I.issueid) AS total_issues
+FROM STUDENTMASTER SM
+JOIN ISSUETABLE I ON SM.stud_enroll_no =
+I.stud_enroll_no
+GROUP BY SM.class;
