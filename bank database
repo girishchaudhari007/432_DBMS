@@ -3,6 +3,67 @@
 • Write a trigger on ACCOUNT table such that if balance is less than 300 then customer should not withdraw the money. 
 • Write a procedure on ACCOUNT & TRANSACTION table such that as user enters new transaction the balance is, updated in ACCOUNT table.
 
+CREATE DATABASE BankDB; 
+USE BankDB; 
+CREATE TABLE ACCOUNT ( 
+    accno INT PRIMARY KEY CHECK (accno < 1000), 
+    open_date DATE, 
+    acctype CHAR(1) CHECK (acctype IN ('P', 'J')), 
+    balance DECIMAL(10, 2)  
+); 
+ 
+CREATE TABLE CUSTOMER ( 
+    cust_id INT PRIMARY KEY, 
+    name VARCHAR(50), 
+    address VARCHAR(100), 
+    accno INT NOT NULL FOREIGN KEY REFERENCES ACCOUNT(accno) 
+); 
+ 
+CREATE TABLE TRANSACT ( 
+    trans_id INT PRIMARY KEY, 
+    trans_date DATE, 
+    accno INT FOREIGN KEY REFERENCES ACCOUNT(accno), 
+    trans_type CHAR(1) CHECK (trans_type IN ('C', 'D')), 
+    amount DECIMAL(10, 2) 
+); 
+
+-- ACCOUNT RECORDS 
+INSERT INTO ACCOUNT VALUES 
+(1, '2024-01-01', 'P', 100000), 
+(2, '2023-06-12', 'J', 9000), 
+(3, '2022-09-20', 'P', 50000), 
+(4, '2021-03-15', 'J', 250000), 
+(5, '2020-11-11', 'P', 30000), 
+(6, '2022-07-07', 'P', 7000), 
+(7, '2021-12-01', 'J', 1000), 
+(8, '2023-04-10', 'P', 110000), 
+(9, '2024-05-01', 'J', 85000), 
+(10, '2022-01-25', 'P', 99000); 
+
+ -- CUSTOMER RECORDS 
+INSERT INTO CUSTOMER VALUES 
+(101, 'Ravi', 'Pune', 1), 
+(102, 'Neha', 'Mumbai', 2), 
+(103, 'Aman', 'Delhi', 3), 
+(104, 'Pooja', 'Nagpur', 4), 
+(105, 'Mehul', 'Goa', 5), 
+(106, 'Seema', 'Chennai', 6), 
+(107, 'Arjun', 'Surat', 7), 
+(108, 'Rina', 'Kolkata', 8), 
+(109, 'Karan', 'Indore', 9), 
+(110, 'Simran', 'Ahmedabad', 10); 
+ 
+INSERT INTO TRANSACT VALUES 
+(1, '2012-03-25', 1, 'C', 50000), 
+(2, '2012-03-26', 2, 'C', 10000), 
+(3, '2012-03-27', 3, 'C', 3000), 
+(4, '2012-03-28', 4, 'C', 25000), 
+(5, '2012-03-29', 5, 'D', 2000), 
+(6, '2023-01-01', 6, 'D', 500), 
+(7, '2024-04-10', 7, 'C', 6000), 
+(8, '2023-05-20', 8, 'C', 50000), 
+(9, '2022-11-11', 9, 'D', 4000), 
+(10, '2024-06-01', 10, 'C', 100000);
 
 
 
