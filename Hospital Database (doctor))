@@ -1,3 +1,9 @@
+• Find the details of the doctors who are treating the patients of ward no 3 & display the result along with patient name & disease. 
+• Find the name of the disease by which maximum patients are suffering. 
+• Write a trigger on ADMITTEDPATIENT table such that the wardno value should be between 1-5. 
+• Write a procedure to give the details of patients who are admitted in the hospital for more than 5 days. 
+
+
 create table doctor( 
 Did int primary key, 
 Dname varchar(20), 
