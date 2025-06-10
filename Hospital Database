@@ -1,3 +1,8 @@
+• Find the details of doctors who are treating the patient of ward no 3. 
+• Write a trigger on PATIENTMASTER table such that the blood group should be A, B, AB or 0. 
+• Find the details of patient who are discharge within the period 03/03/12 to 25/ 03/12 
+• Write a procedure on ADMIFTEDPATIENT table such as to calculate bill of all discharged patients. The charges per day for a ward is Ward_no. * 100. e.g. For ward_no 3 charges/day are 300Rs. 
+
 create table doctor( 
 Did int primary key, 
 Dname varchar(20), 
